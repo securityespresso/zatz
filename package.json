@@ -1,0 +1,13 @@
+{
+  "name": "zatz",
+  "version": "1.0.0",
+  "description": "ZatzBot - moderator bot for Telegram groups",
+  "main": "index.js",
+  "scripts": {},
+  "author": "shark0der",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^6.1.0",
+    "telegraf": "^3.25.0"
+  }
+}
