@@ -19,15 +19,15 @@ const groups = (process.env.GROUPS || '')
 
 const messages = {
   removed: (user, reason) => {
-    const name = user.first_name + (user.username ? ` (${user.username})` : '');
+    const name = user.first_name + (user.username ? ` (@${user.username})` : '');
     return `☝️ Message from ${name} removed. Reason: ${reason}`;
   },
   trusted: (user, reason) => {
-    const name = user.first_name + (user.username ? ` (${user.username})` : '');
+    const name = user.first_name + (user.username ? ` (@${user.username})` : '');
     return `☝️ ${name} is now trusted`;
   },
   untrusted: (user, reason) => {
-    const name = user.first_name + (user.username ? ` (${user.username})` : '');
+    const name = user.first_name + (user.username ? ` (@${user.username})` : '');
     return `☝️ ${name} is now untrusted`;
   },
 }
