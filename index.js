@@ -13,16 +13,21 @@ const messages = {
   },
 };
 
-function formatChatName (chat) {
+const formatChatName = chat => {
   const { id, title, username } = chat;
   const user = username ? ` @${username}` : '';
   return `${title} (${id}${user})`;
-}
+};
 
-function formatUserName (member) {
+const formatUserName = member => {
   const { id, first_name: name, username } = member;
-  return name + `[${id}]` + (username ? ' (@' + username + ')' : '');
-}
+  const user = username ? `(@${username})` : '';
+  return `${name}[${id}] ${user}`;
+};
+
+const to = promise => promise
+  .then(r => [r, null])
+  .catch(e => [null, e]);
 
 // Mark join times for new users
 bot.use(async (ctx, next) => {
@@ -39,7 +44,14 @@ bot.use(async (ctx, next) => {
   const updateInterval = 3600 * 1000; // update one time per hour at most
 
   if (now - lastUpdate > updateInterval) {
-    const admins = await ctx.getChatAdministrators();
+
+    const [admins, error] = await to(ctx.getChatAdministrators());
+
+    if (error) {
+      console.log(`Failed to fetch chat admins: ${error.stack}`);
+      return; // give up on message
+    }
+
     groups[ctx.chat.id].admins = admins.reduce((list, { user }) => {
       const { id } = user;
       const name = formatUserName(user);
@@ -124,11 +136,17 @@ bot.use(async (ctx, next) => {
   if (restrictedItems.length) {
     const reason = restrictedItems.join(', ');
     const msg = messages.removed(ctx.from, 'new user + ' + reason);
-    await Promise.all([
+
+    const [, error] = await to(Promise.all([
       ctx.deleteMessage(),
       ctx.reply(msg),
-    ]);
-    console.log(msg);
+    ]));
+
+    if (!error) {
+      console.error(`Action failed: ${error.stack}`);
+    }
+
+    console.log(`[failed] ${msg}`);
   }
 
   return next();
